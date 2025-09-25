@@ -62,7 +62,6 @@
         font-size: 13px;
       }
 
-      /* слот */
       .slot-wrap {
         display: flex;
         flex-direction: column;
@@ -120,7 +119,7 @@
         border-radius: 8px;
       }
 
-      /* right column */
+    
       .stats {
         display: flex;
         flex-direction: column;
@@ -144,7 +143,7 @@
         font-size: 13px;
       }
 
-      /* win animation */
+    
       .win {
         animation: pop 700ms cubic-bezier(0.2, 0.9, 0.3, 1);
       }
@@ -169,7 +168,7 @@
         font-size: 12px;
       }
 
-      /* responsive */
+      
       @media (max-width: 880px) {
         .container {
           grid-template-columns: 1fr;
@@ -243,9 +242,9 @@
     </div>
 
     <script>
-      // Символы и множители для комбинаций
+    
       const symbols = ["🍒", "🍋", "🔔", "⭐", "💎", "7️⃣"];
-      // простая выплата: если все три одинаковы — разные множители
+      
       const payouts = {
         "7️⃣": 50,
         "💎": 20,
@@ -274,7 +273,7 @@
       balanceEl.textContent = state.balance;
 
       function randomSymbol() {
-        // можно настроить вероятность: чаще фрукты, реже 7
+        
         const weights = [18, 16, 12, 8, 4, 2]; // total 60
         const sum = weights.reduce((a, b) => a + b, 0);
         let r = Math.floor(Math.random() * sum);
@@ -288,10 +287,10 @@
       function spinOnce() {
         const bet = Math.max(1, Math.min(1000000, Number(betInput.value) || 1));
         if (bet > state.balance) {
-          message.textContent = "Недостаточно средств для ставки.";
+          message.textContent = "Ты все проебал еблан!";
           return;
         }
-        // lock UI
+        
         spinBtn.disabled = true;
         autoBtn.disabled = true;
         betInput.disabled = true;
@@ -300,18 +299,18 @@
         state.balance -= bet;
         balanceEl.textContent = state.balance;
 
-        // анимируем каждый барабан с задержкой
+        
         const results = [];
         for (let i = 0; i < 3; i++) {
-          // создаём псевдоскольжение: несколько символов подряд
+          
           const sequence = Array.from({ length: 12 }, () => randomSymbol());
-          sequence.push(randomSymbol()); // финал
+          sequence.push(randomSymbol()); 
           const final = sequence[sequence.length - 1];
           results.push(final);
 
-          // apply animation using transform translateY simulation
+          
           const inner = innerEls[i];
-          // temporary show randoms quickly
+          
           let idx = 0;
           inner.textContent = sequence[idx];
           const interval = setInterval(() => {
@@ -320,13 +319,13 @@
               clearInterval(interval);
               inner.textContent = final;
             } else inner.textContent = sequence[idx];
-          }, 80 + i * 60); // stagger
+          }, 80 + i * 60); 
         }
 
-        // determine result after max time
+        
         setTimeout(() => {
           evaluateResult(results, bet);
-          // unlock UI
+          
           spinBtn.disabled = false;
           autoBtn.disabled = false;
           betInput.disabled = false;
@@ -340,7 +339,7 @@
         if (a === b && b === c) {
           win = payouts[a] * bet;
         } else if (a === b || b === c || a === c) {
-          // two of a kind — small push
+        
           win = Math.floor(bet * 0.5);
         }
 
@@ -350,7 +349,7 @@
           lastWinEl.textContent = win;
           balanceEl.textContent = state.balance;
           message.textContent = `ты выиграл ${win}!`;
-          // visual pop
+          
           reelEls.forEach((r) => r.classList.add("win"));
           setTimeout(
             () => reelEls.forEach((r) => r.classList.remove("win")),
@@ -372,17 +371,17 @@
         message.textContent = "Сброшено.";
       });
 
-      // авто-режим: 10 спинов подряд
+      
       autoBtn.addEventListener("click", async () => {
         autoBtn.disabled = true;
         spinBtn.disabled = true;
         betInput.disabled = true;
         const rounds = 10;
         for (let i = 0; i < rounds; i++) {
-          // экономим, если нет денег
+          
           if (state.balance <= 0) break;
           spinOnce();
-          // wait for single spin duration (approx)
+          
           await new Promise((r) => setTimeout(r, 1700));
         }
         autoBtn.disabled = false;
@@ -390,7 +389,7 @@
         betInput.disabled = false;
       });
 
-      // keyboard: Space -> spin
+      
       window.addEventListener("keydown", (e) => {
         if (e.code === "Space") {
           e.preventDefault();
@@ -398,13 +397,14 @@
         }
       });
 
-      // Accessibility small niceties
+      
       betInput.addEventListener("change", () => {
         if (betInput.value < 1) betInput.value = 1;
       });
 
-      // for demo: make reels show random symbols on load
+      
       innerEls.forEach((el) => (el.textContent = randomSymbol()));
     </script>
   </body>
 </html>
+
