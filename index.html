@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>казик</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://i.pinimg.com/736x/ea/2a/af/ea2aaf9993ebae4092d0844df841dad0.jpg"
+    />
     <style>
       :root {
         --bg: #0b0f17;
@@ -119,7 +124,6 @@
         border-radius: 8px;
       }
 
-    
       .stats {
         display: flex;
         flex-direction: column;
@@ -143,7 +147,6 @@
         font-size: 13px;
       }
 
-    
       .win {
         animation: pop 700ms cubic-bezier(0.2, 0.9, 0.3, 1);
       }
@@ -168,7 +171,6 @@
         font-size: 12px;
       }
 
-      
       @media (max-width: 880px) {
         .container {
           grid-template-columns: 1fr;
@@ -242,9 +244,8 @@
     </div>
 
     <script>
-    
       const symbols = ["🍒", "🍋", "🔔", "⭐", "💎", "7️⃣"];
-      
+
       const payouts = {
         "7️⃣": 50,
         "💎": 20,
@@ -273,7 +274,6 @@
       balanceEl.textContent = state.balance;
 
       function randomSymbol() {
-        
         const weights = [18, 16, 12, 8, 4, 2]; // total 60
         const sum = weights.reduce((a, b) => a + b, 0);
         let r = Math.floor(Math.random() * sum);
@@ -290,7 +290,7 @@
           message.textContent = "Ты все проебал еблан!";
           return;
         }
-        
+
         spinBtn.disabled = true;
         autoBtn.disabled = true;
         betInput.disabled = true;
@@ -299,18 +299,15 @@
         state.balance -= bet;
         balanceEl.textContent = state.balance;
 
-        
         const results = [];
         for (let i = 0; i < 3; i++) {
-          
           const sequence = Array.from({ length: 12 }, () => randomSymbol());
-          sequence.push(randomSymbol()); 
+          sequence.push(randomSymbol());
           const final = sequence[sequence.length - 1];
           results.push(final);
 
-          
           const inner = innerEls[i];
-          
+
           let idx = 0;
           inner.textContent = sequence[idx];
           const interval = setInterval(() => {
@@ -319,13 +316,12 @@
               clearInterval(interval);
               inner.textContent = final;
             } else inner.textContent = sequence[idx];
-          }, 80 + i * 60); 
+          }, 80 + i * 60);
         }
 
-        
         setTimeout(() => {
           evaluateResult(results, bet);
-          
+
           spinBtn.disabled = false;
           autoBtn.disabled = false;
           betInput.disabled = false;
@@ -339,7 +335,6 @@
         if (a === b && b === c) {
           win = payouts[a] * bet;
         } else if (a === b || b === c || a === c) {
-        
           win = Math.floor(bet * 0.5);
         }
 
@@ -349,7 +344,7 @@
           lastWinEl.textContent = win;
           balanceEl.textContent = state.balance;
           message.textContent = `ты выиграл ${win}!`;
-          
+
           reelEls.forEach((r) => r.classList.add("win"));
           setTimeout(
             () => reelEls.forEach((r) => r.classList.remove("win")),
@@ -371,17 +366,15 @@
         message.textContent = "Сброшено.";
       });
 
-      
       autoBtn.addEventListener("click", async () => {
         autoBtn.disabled = true;
         spinBtn.disabled = true;
         betInput.disabled = true;
         const rounds = 10;
         for (let i = 0; i < rounds; i++) {
-          
           if (state.balance <= 0) break;
           spinOnce();
-          
+
           await new Promise((r) => setTimeout(r, 1700));
         }
         autoBtn.disabled = false;
@@ -389,7 +382,6 @@
         betInput.disabled = false;
       });
 
-      
       window.addEventListener("keydown", (e) => {
         if (e.code === "Space") {
           e.preventDefault();
@@ -397,15 +389,11 @@
         }
       });
 
-      
       betInput.addEventListener("change", () => {
         if (betInput.value < 1) betInput.value = 1;
       });
 
-      
       innerEls.forEach((el) => (el.textContent = randomSymbol()));
     </script>
   </body>
 </html>
-
-
