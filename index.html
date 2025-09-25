@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Демо казик — слот</title>
+    <style>
+      :root {
+        --bg: #0b0f17;
+        --card: #0f1720;
+        --accent: #ff824d;
+        --muted: #9aa6b2;
+        --glass: rgba(255, 255, 255, 0.04);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial;
+        background: radial-gradient(
+            1200px 600px at 10% 10%,
+            #17202a 0%,
+            transparent 10%
+          ),
+          radial-gradient(900px 400px at 90% 90%, #11202b 0%, transparent 10%),
+          var(--bg);
+        color: #e6eef6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .container {
+        width: 980px;
+        max-width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 360px;
+        gap: 24px;
+      }
+      .panel {
+        background: linear-gradient(
+          180deg,
+          var(--card),
+          rgba(255, 255, 255, 0.02)
+        );
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 6px 30px rgba(2, 6, 23, 0.6);
+      }
+      header h1 {
+        margin: 0 0 8px 0;
+        font-size: 20px;
+      }
+      header p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      /* слот */
+      .slot-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+      }
+      .reels {
+        display: flex;
+        gap: 12px;
+        background: var(--glass);
+        padding: 16px;
+        border-radius: 12px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+      }
+      .reel {
+        width: 120px;
+        height: 120px;
+        border-radius: 10px;
+        overflow: hidden;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 46px;
+      }
+      .reel .inner {
+        transition: transform 700ms cubic-bezier(0.2, 0.9, 0.3, 1);
+      }
+      .controls {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .btn {
+        background: linear-gradient(180deg, var(--accent), #ff9a1a);
+        color: #111;
+        border: none;
+        padding: 12px 18px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 700;
+        box-shadow: 0 6px 18px rgba(255, 148, 36, 0.18);
+      }
+      .btn:active {
+        transform: translateY(1px);
+      }
+      .small {
+        background: #0d1320;
+        color: var(--muted);
+        padding: 8px 10px;
+        border-radius: 8px;
+      }
+
+      /* right column */
+      .stats {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .stat {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          transparent
+        );
+        padding: 12px;
+        border-radius: 10px;
+      }
+      .balance {
+        font-size: 24px;
+        font-weight: 700;
+      }
+      .muted {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      /* win animation */
+      .win {
+        animation: pop 700ms cubic-bezier(0.2, 0.9, 0.3, 1);
+      }
+      @keyframes pop {
+        0% {
+          transform: scale(0.9);
+          opacity: 0;
+        }
+        50% {
+          transform: scale(1.06);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      footer {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      /* responsive */
+      @media (max-width: 880px) {
+        .container {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="panel">
+        <header>
+          <h1>демо слот</h1>
+          <p>Депни настю в казик братан</p>
+        </header>
+
+        <section class="slot-wrap">
+          <div class="reels" aria-hidden="false">
+            <div class="reel" id="reel0"><div class="inner">🍒</div></div>
+            <div class="reel" id="reel1"><div class="inner">🔔</div></div>
+            <div class="reel" id="reel2"><div class="inner">7️⃣</div></div>
+          </div>
+
+          <div class="controls">
+            <div class="small">
+              Ставка:
+              <input
+                id="bet"
+                type="number"
+                value="10"
+                min="1"
+                max="1000"
+                style="
+                  width: 80px;
+                  margin-left: 8px;
+                  background: transparent;
+                  border: none;
+                  color: inherit;
+                  font-weight: 700;
+                "
+              />
+            </div>
+
+            <button class="btn" id="spinBtn">SPIN</button>
+            <button class="small" id="autoBtn">Авто 10</button>
+            <button class="small" id="resetBtn">Сброс</button>
+          </div>
+
+          <div id="message" class="muted" style="min-height: 22px"></div>
+          <footer>Управление: меняй ставку и нажимай SPIN.</footer>
+        </section>
+      </div>
+
+      <aside class="panel">
+        <div class="stats">
+          <div class="stat">
+            <div class="muted">Баланс</div>
+            <div id="balance" class="balance">1000</div>
+          </div>
+
+          <div class="stat">
+            <div class="muted">Последний выигрыш</div>
+            <div id="lastWin" class="balance">0</div>
+          </div>
+
+          <div class="stat">
+            <div class="muted">Статистика (сессия)</div>
+            <div id="stats" class="muted">Спинов: 0 · Выигрышей: 0</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <script>
+      // Символы и множители для комбинаций
+      const symbols = ["🍒", "🍋", "🔔", "⭐", "💎", "7️⃣"];
+      // простая выплата: если все три одинаковы — разные множители
+      const payouts = {
+        "7️⃣": 50,
+        "💎": 20,
+        "⭐": 10,
+        "🔔": 6,
+        "🍋": 4,
+        "🍒": 2,
+      };
+
+      const reelEls = [
+        document.getElementById("reel0"),
+        document.getElementById("reel1"),
+        document.getElementById("reel2"),
+      ];
+      const innerEls = reelEls.map((r) => r.querySelector(".inner"));
+      const spinBtn = document.getElementById("spinBtn");
+      const autoBtn = document.getElementById("autoBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const betInput = document.getElementById("bet");
+      const balanceEl = document.getElementById("balance");
+      const lastWinEl = document.getElementById("lastWin");
+      const message = document.getElementById("message");
+      const statsEl = document.getElementById("stats");
+
+      let state = { balance: 1000, spins: 0, wins: 0 };
+      balanceEl.textContent = state.balance;
+
+      function randomSymbol() {
+        // можно настроить вероятность: чаще фрукты, реже 7
+        const weights = [18, 16, 12, 8, 4, 2]; // total 60
+        const sum = weights.reduce((a, b) => a + b, 0);
+        let r = Math.floor(Math.random() * sum);
+        for (let i = 0; i < weights.length; i++) {
+          if (r < weights[i]) return symbols[i];
+          r -= weights[i];
+        }
+        return symbols[0];
+      }
+
+      function spinOnce() {
+        const bet = Math.max(1, Math.min(1000000, Number(betInput.value) || 1));
+        if (bet > state.balance) {
+          message.textContent = "Недостаточно средств для ставки.";
+          return;
+        }
+        // lock UI
+        spinBtn.disabled = true;
+        autoBtn.disabled = true;
+        betInput.disabled = true;
+        message.textContent = "Крутим...";
+
+        state.balance -= bet;
+        balanceEl.textContent = state.balance;
+
+        // анимируем каждый барабан с задержкой
+        const results = [];
+        for (let i = 0; i < 3; i++) {
+          // создаём псевдоскольжение: несколько символов подряд
+          const sequence = Array.from({ length: 12 }, () => randomSymbol());
+          sequence.push(randomSymbol()); // финал
+          const final = sequence[sequence.length - 1];
+          results.push(final);
+
+          // apply animation using transform translateY simulation
+          const inner = innerEls[i];
+          // temporary show randoms quickly
+          let idx = 0;
+          inner.textContent = sequence[idx];
+          const interval = setInterval(() => {
+            idx++;
+            if (idx >= sequence.length) {
+              clearInterval(interval);
+              inner.textContent = final;
+            } else inner.textContent = sequence[idx];
+          }, 80 + i * 60); // stagger
+        }
+
+        // determine result after max time
+        setTimeout(() => {
+          evaluateResult(results, bet);
+          // unlock UI
+          spinBtn.disabled = false;
+          autoBtn.disabled = false;
+          betInput.disabled = false;
+        }, 1400);
+      }
+
+      function evaluateResult(results, bet) {
+        state.spins++;
+        const [a, b, c] = results;
+        let win = 0;
+        if (a === b && b === c) {
+          win = payouts[a] * bet;
+        } else if (a === b || b === c || a === c) {
+          // two of a kind — small push
+          win = Math.floor(bet * 0.5);
+        }
+
+        if (win > 0) {
+          state.balance += win;
+          state.wins++;
+          lastWinEl.textContent = win;
+          balanceEl.textContent = state.balance;
+          message.textContent = `ты выиграл ${win}!`;
+          // visual pop
+          reelEls.forEach((r) => r.classList.add("win"));
+          setTimeout(
+            () => reelEls.forEach((r) => r.classList.remove("win")),
+            700
+          );
+        } else {
+          lastWinEl.textContent = 0;
+          message.textContent = "Увы, нет. Попробуй ещё.";
+        }
+        statsEl.textContent = `Спинов: ${state.spins} · Выигрышей: ${state.wins}`;
+      }
+
+      spinBtn.addEventListener("click", spinOnce);
+      resetBtn.addEventListener("click", () => {
+        state = { balance: 1000, spins: 0, wins: 0 };
+        balanceEl.textContent = state.balance;
+        lastWinEl.textContent = 0;
+        statsEl.textContent = "Спинов: 0 · Выигрышей: 0";
+        message.textContent = "Сброшено.";
+      });
+
+      // авто-режим: 10 спинов подряд
+      autoBtn.addEventListener("click", async () => {
+        autoBtn.disabled = true;
+        spinBtn.disabled = true;
+        betInput.disabled = true;
+        const rounds = 10;
+        for (let i = 0; i < rounds; i++) {
+          // экономим, если нет денег
+          if (state.balance <= 0) break;
+          spinOnce();
+          // wait for single spin duration (approx)
+          await new Promise((r) => setTimeout(r, 1700));
+        }
+        autoBtn.disabled = false;
+        spinBtn.disabled = false;
+        betInput.disabled = false;
+      });
+
+      // keyboard: Space -> spin
+      window.addEventListener("keydown", (e) => {
+        if (e.code === "Space") {
+          e.preventDefault();
+          spinBtn.click();
+        }
+      });
+
+      // Accessibility small niceties
+      betInput.addEventListener("change", () => {
+        if (betInput.value < 1) betInput.value = 1;
+      });
+
+      // for demo: make reels show random symbols on load
+      innerEls.forEach((el) => (el.textContent = randomSymbol()));
+    </script>
+  </body>
+</html>
